@@ -37,9 +37,5 @@
         "*.tilesource": "textproto",
         "*template.html": "handlebars",
     },
-    "files.exclude": {
-        "node_modules/": true,
-        "patches/": false,
-    },
     "typescript.tsdk": "node_modules\\typescript\\lib"
 }

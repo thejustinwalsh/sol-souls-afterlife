@@ -4,6 +4,12 @@
     "packages/*"
   ],
   "resolutions": {
-    "typescript-to-lua@1.1.1": "patch:typescript-to-lua@npm:1.1.1#.yarn/patches/typescript-to-lua-npm-1.1.1-249774d4f0"
+    "typescript-to-lua@1.1.1": "patch:typescript-to-lua@npm:1.1.1#.yarn/patches/typescript-to-lua-npm-1.1.1-249774d4f0",
+    "typescript": "4.4.4"
+  },
+  "devDependencies": {
+    "@yarnpkg/sdks": "^2.5.1-rc.4",
+    "eslint": "^7.10.0",
+    "typescript": "4.4.4"
   }
 }
