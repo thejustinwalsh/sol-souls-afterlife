@@ -5,8 +5,8 @@ main_collection = /main/main.collectionc
 shared_state = 1
 
 [display]
-width = 800
-height = 800
+width = 1600
+height = 1280
 update_frequency = 60
 
 [android]
@@ -20,4 +20,8 @@ dependencies#0 = https://github.com/ts-defold/defold-lldebugger/archive/extensio
 clear_color_red = 0.19
 clear_color_green = 0.47
 clear_color_blue = 0.78
+
+[graphics]
+default_texture_min_filter = nearest
+default_texture_mag_filter = nearest
 
