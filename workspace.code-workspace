@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"name": "✨ sol-souls-afterlife",
+			"path": "."
+		},
+		{
+			"name": "📦 defold",
+			"path": "packages/defold"
+		},
+		{
+			"name": "📦 next",
+			"path": "packages/next"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.env.local": "env"
+		}
+	}
+}
