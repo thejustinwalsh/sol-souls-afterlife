@@ -1,25 +1,18 @@
-// Module import example
-import { Template } from "../modules/template";
-
 // Debugging support
 import * as lldebugger from "lldebugger.debug";
 lldebugger.start();
 
 interface props {
-    excitement: number,
-    doOnce: boolean,
-    template: Template
-}
-go.property("excitement", 100);
-
-export function init(this: props): void {
-    msg.post("@render:", "use_fixed_projection", { near: -1, far: 1, zoom: 2 })
+  players: Array<Record<string, hash>>;
 }
 
-export function update(this: props, _dt: number): void {
-    
-}
+export function init(this: props) {
+  this.players = [];
 
-export function on_message(this: props, message_id: hash, _message: string, _sender: url): void {
-    
+  const pos = go.get_position("/spawner");
+  const player = collectionfactory.create("/spawner#avatarfactory", pos, vmath.quat(), null, 0.5) as Record<string, hash>;
+  pprint(player);
+  msg.post(player[hash("/body") as string], "spawn");
+  msg.post(player[hash("/avatar") as string], "follow", { target: player["/avatar"]});
+  this.players.push(player);
 }

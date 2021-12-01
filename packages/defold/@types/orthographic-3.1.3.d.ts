@@ -3,6 +3,14 @@
 
 /** @noResolution */
 declare module 'orthographic.camera' {
+  export function follow(camera_id: hash | url | null, target: hash | url, options?: {
+    lerp?: number,
+    offset?: vmath.vector3,
+    horizontal?: boolean,
+    vertical?: boolean,
+    immediate?: boolean,
+  }): void;
+
   /**
    * Get the current zoom level of the camera.
    * @param camera_id (hash | url), nil for the first camera

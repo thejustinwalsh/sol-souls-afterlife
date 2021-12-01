@@ -1,5 +1,6 @@
 [bootstrap]
 main_collection = /main/main.collectionc
+render = /orthographic/render/orthographic.renderc
 
 [script]
 shared_state = 1
@@ -25,4 +26,7 @@ clear_color_blue = 0.78
 [graphics]
 default_texture_min_filter = nearest
 default_texture_mag_filter = nearest
+
+[physics]
+debug = 0
 
