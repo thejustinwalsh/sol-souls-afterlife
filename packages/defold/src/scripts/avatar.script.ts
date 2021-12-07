@@ -5,6 +5,7 @@ interface props {
     target?: vmath.vector3,
     speed: number,
     id?: hash,
+    body?: hash,
     following: boolean,
 
 }
@@ -16,7 +17,8 @@ type message = {
     other_group: hash;
     other_id: hash;
     enter?: boolean;
-    target?: hash;
+    follow?: hash;
+    body?: hash;
   };
 
 go.property("speed", 120);
@@ -44,6 +46,7 @@ export function update(this: props, dt: number): void {
     if (vmath.length_sqr(distance) >= 1) {
         const dir = vmath.normalize(this.target - pos as vmath.vector3);
         go.set_position(pos + dir * dt * this.speed as vmath.vector3);
+        if (this.body) msg.post(this.body, "flip", { x: dir.x });
     }
     else {
         this.target = undefined;
@@ -68,7 +71,8 @@ export function on_message(this: props, message_id: hash, message: message): voi
             }
         }
     }
-    else if (message_id === hash("follow") && message.target) {
-        this.id = message.target;
+    else if (message_id === hash("spawn")) {
+        this.id = message.follow;
+        this.body = message.body;
     } 
 }
