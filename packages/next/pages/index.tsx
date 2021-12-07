@@ -1,6 +1,3 @@
-import * as metaplex from "@metaplex/js";
-import { MetadataData } from "@metaplex/js/lib/programs/metadata";
-import { Connection, PublicKey } from '@solana/web3.js';
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
