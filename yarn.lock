@@ -4822,7 +4822,7 @@ __metadata:
     next: 12.0.4
     next-themes: ^0.0.15
     react: 17.0.2
-    react-defold: ^0.1.10
+    react-defold: ^0.1.11
     react-dom: 17.0.2
     typescript: 4.4.4
   languageName: unknown
@@ -5638,12 +5638,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-defold@npm:^0.1.10":
-  version: 0.1.10
-  resolution: "react-defold@npm:0.1.10"
+"react-defold@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "react-defold@npm:0.1.11"
   peerDependencies:
     react: ^17.0.2
-  checksum: 159a331eca74aeadde26cb3aca065ca1b80613a8ed6e8b414dab63c421acade4f4a26ff8585c229dbbd8998a6044d7193965baee4114566998fd32076530cd00
+  checksum: dff113f028dfa0244a4fbec0335081402b12efcebf80c9c24b0135e9e6c81c774a3266f92dd707ccf3d572baaa3884bb58782c3f3397776007f44a0dd0ae41a3
   languageName: node
   linkType: hard
 

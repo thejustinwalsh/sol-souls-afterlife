@@ -14,31 +14,41 @@ export function init(this: props): void {
   this.players = [];
   this.html5 = html5 !== undefined && html5.run('window.DefoldApp') !== '';
 
-  const pos = go.get_position('/spawner');
-  const player = collectionfactory.create('/spawner#avatarfactory', pos, vmath.quat(), null, 0.5) as Record<
-    string,
-    hash
-  >;
-  pprint(player);
-  msg.post(player[hash('/body') as string], 'spawn', {
-    body: 'body_green',
-    cheeks: 'cheeks_pink',
-    eyes: 'eyes_happy',
-    glasses: 'glasses_monacle',
-    hair: 'hair_cat_ears_synth',
-    hands: 'hands_wand',
-    mouth: 'mouth_shy_guy',
+  //* Testing spawn
+  /*
+  spawn.call(this, {
+    local: true,
+    address: '',
+    traits: {
+      body: 'body_base_blue',
+      cheeks: 'cheeks_red',
+      eyes: 'eyes_black_left_wink',
+      glasses: 'glasses_hipster_blue',
+      hair: 'hair_chef_hat',
+      hands: 'hands_none',
+      mouth: 'mouth_frown',
+    },
   });
-  msg.post(player[hash('/avatar') as string], 'spawn', { follow: player['/avatar'], body: player['/body'] });
-
-  this.players.push(player);
+  */
 }
 
 export function update(this: props): void {
   if (this.html5) {
-    let message = {};
+    let message:
+      | {
+          command: string;
+          payload: {
+            local: boolean;
+            address: string;
+            traits: Record<string, string>;
+          };
+        }
+      | undefined;
     const raw = html5.run('window.DefoldApp.out()');
-    if (raw !== '') message = JSON.decode(raw) as Record<string, unknown>;
+    if (raw !== '') message = JSON.decode(raw) as typeof message;
+    if (message && message.command === 'spawn') {
+      spawn.call(this, message.payload);
+    }
 
     // TODO: Dispatch messages
     pprint(message);
@@ -53,4 +63,18 @@ function send(this: props, command: string, payload: Record<string, unknown>) {
     const serialized = { command, payload };
     html5.run('window.DefoldApp.in(' + JSON.encode(serialized) + ')');
   }
+}
+
+function spawn(this: props, payload: { local: boolean; address: string; traits: Record<string, string> }) {
+  const pos = go.get_position('/spawner');
+  const player = collectionfactory.create('/spawner#avatarfactory', pos, vmath.quat(), null, 0.5) as Record<
+    string,
+    hash
+  >;
+  msg.post(player[hash('/body') as string], 'spawn', payload.traits);
+  msg.post(player[hash('/avatar') as string], 'spawn', {
+    follow: payload.local ? player['/avatar'] : undefined,
+    body: player['/body'],
+  });
+  this.players.push(player);
 }

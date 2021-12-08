@@ -125,7 +125,7 @@ embedded_instances {
   "  id: \"body\"\n"
   "  type: \"sprite\"\n"
   "  data: \"tile_set: \\\"/main/sprites.atlas\\\"\\n"
-  "default_animation: \\\"body_white\\\"\\n"
+  "default_animation: \\\"body_base_white\\\"\\n"
   "material: \\\"/builtins/materials/sprite.material\\\"\\n"
   "blend_mode: BLEND_MODE_ALPHA\\n"
   "\"\n"

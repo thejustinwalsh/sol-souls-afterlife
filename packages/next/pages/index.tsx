@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { DefoldApp } from 'react-defold';
+import { DefoldApp, DefoldAppContextProvider, useDefoldAppContext } from 'react-defold';
 
 import { Switch, Case } from '../components/Switch';
 import { Box } from '../components/Box';
@@ -133,14 +133,30 @@ const SelectNFT: React.FC<{ tokens: Array<Token>; onSelect: (token: Token) => vo
 });
 
 const GameLoop: React.FC<{ token: Token | null }> = memo(function GameLoop({ token }) {
+  const onReceive = useCallback((command: string, payload: Record<string, unknown>) => {
+    console.log(command, payload);
+  }, []);
+
+  const { send, data } = useDefoldAppContext({ onReceive });
+
+  useEffect(() => {
+    if (token !== null) {
+      const payload: Record<string, unknown> = {};
+      token.metadata.attributes.forEach(({ trait_type, value }) => {
+        const key = trait_type.split('/')[0].toLowerCase();
+        payload[key] = trait_type.split('/')[0].toLowerCase() + '_' + value.replaceAll(' ', '_').toLowerCase();
+      });
+      console.log(payload);
+      send('spawn', { local: true, token: token.address, traits: payload });
+    }
+  }, [send, token]);
+
   return (
     <Flex direction="column" justify="center" align="center" css={{ padding: '$4' }}>
       {token &&
         token.metadata.attributes.map(({ trait_type, value }) => (
           <Box css={{ padding: '$1' }} key={trait_type}>
-            <Text size="3">
-              {trait_type.split('/')[0].toLowerCase() + '_' + value.replaceAll(' ', '_').toLowerCase()}
-            </Text>
+            <Text size="3">{}</Text>
           </Box>
         ))}
     </Flex>
@@ -196,6 +212,7 @@ const Home: NextPage = () => {
               height={640}
             />
           </Flex>
+
           <Flex direction="column" justify="center" align="center" css={{ position: 'absolute', zIndex: 1 }}>
             <Switch on={step}>
               <Case where="">
@@ -205,7 +222,9 @@ const Home: NextPage = () => {
                 <SelectNFT tokens={tokens} onSelect={handleSelectToken} />
               </Case>
               <Case where="game-loop">
-                <GameLoop token={selectedToken} />
+                <DefoldAppContextProvider namespace="DefoldApp" data={{}}>
+                  <GameLoop token={selectedToken} />
+                </DefoldAppContextProvider>
               </Case>
             </Switch>
           </Flex>
