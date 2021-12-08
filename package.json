@@ -3,6 +3,11 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "setup:defold": "yarn workspace defold pack",
+    "setup:next": "yarn decompress ./packages/defold/package.tgz --out-dir=./packages/next/public",
+    "setup": "yarn setup:defold && yarn setup:next"
+  },
   "resolutions": {
     "typescript-to-lua@1.1.1": "patch:typescript-to-lua@npm:1.1.1#.yarn/patches/typescript-to-lua-npm-1.1.1-249774d4f0",
     "typescript": "4.4.4"
@@ -12,5 +17,8 @@
     "eslint": "^7.10.0",
     "typescript": "4.4.4"
   },
-  "packageManager": "yarn@3.2.0-rc.7"
+  "packageManager": "yarn@3.2.0-rc.7",
+  "dependencies": {
+    "decompress-cli": "^2.0.0"
+  }
 }

@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import { DefoldApp } from 'react-defold';
 
 import { Switch, Case } from '../components/Switch';
 import { Box } from '../components/Box';
@@ -174,7 +175,6 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ThemeToggleButton />
-
       <Flex direction="column" justify="center" align="center" css={{ minHeight: '100vh', padding: '4rem 0' }}>
         <Box css={{ margin: '$4' }}>
           <Heading as="h1" size="4">
@@ -182,17 +182,34 @@ const Home: NextPage = () => {
           </Heading>
         </Box>
 
-        <Switch on={step}>
-          <Case where="">
-            <ConnectWallet onTokens={handleTokens} />
-          </Case>
-          <Case where="select-nft">
-            <SelectNFT tokens={tokens} onSelect={handleSelectToken} />
-          </Case>
-          <Case where="game-loop">
-            <GameLoop token={selectedToken} />
-          </Case>
-        </Switch>
+        <Flex
+          direction="column"
+          justify="center"
+          align="center"
+          css={{ position: 'relative', pt: '$3', boxSizing: 'content-box', minWidth: 800, minHeight: 640 }}
+        >
+          <Flex css={{ position: 'absolute', zIndex: 0 }}>
+            <DefoldApp
+              root="./package/bundle/js-web/sol-souls-afterlife"
+              app="solsoulsafterlife"
+              width={800}
+              height={640}
+            />
+          </Flex>
+          <Flex direction="column" justify="center" align="center" css={{ position: 'absolute', zIndex: 1 }}>
+            <Switch on={step}>
+              <Case where="">
+                <ConnectWallet onTokens={handleTokens} />
+              </Case>
+              <Case where="select-nft">
+                <SelectNFT tokens={tokens} onSelect={handleSelectToken} />
+              </Case>
+              <Case where="game-loop">
+                <GameLoop token={selectedToken} />
+              </Case>
+            </Switch>
+          </Flex>
+        </Flex>
       </Flex>
 
       <Flex justify="center" align="center" css={{ padding: '$4' }}>

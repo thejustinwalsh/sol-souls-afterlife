@@ -4,6 +4,10 @@
   "version": "0.1.0",
   "description": "Solana Souls Afterlife",
   "author": "Justin Walsh <hello@tjw.dev>",
+  "files": [
+    "bundle/**/archive/*.*",
+    "bundle/**/*.{js,wasm,json}"
+  ],
   "keywords": [
     "typescript",
     "lua",
