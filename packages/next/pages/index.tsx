@@ -14,6 +14,7 @@ import { Container } from '../components/Container';
 import { Card } from '../components/Card';
 import { Link } from '../components/Link';
 import { TextField } from '../components/TextField';
+import { sign } from 'crypto';
 
 declare global {
   interface Window {
@@ -35,84 +36,72 @@ interface Token {
   };
 }
 
-const ConnectWallet: React.FC<{ onTokens: (tokens: Array<Token>) => void }> = memo(function ConnectWallet({
-  onTokens,
-}) {
-  const CREATOR = '9doSyLpnDtAB4R1CVmKjwqUWP6oJ8huB1SSJksthYPS'; // Sol Souls
+const ConnectWallet: React.FC<{ onTokens: (address: string, tokens: Array<Token>) => void }> = memo(
+  function ConnectWallet({ onTokens }) {
+    const CREATOR = '9doSyLpnDtAB4R1CVmKjwqUWP6oJ8huB1SSJksthYPS'; // Sol Souls
 
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [hasWallet, setHasWallet] = useState(false);
+    const [walletConnected, setWalletConnected] = useState(false);
+    const [hasWallet, setHasWallet] = useState(false);
 
-  const handleSubmit = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        fetch(`/api/tokens?address=${e.currentTarget.value}&creator=${CREATOR}`)
-          .then((res) => res.json())
-          .then((tokens) => {
-            onTokens(tokens);
-          });
-      }
-    },
-    [onTokens]
-  );
-
-  const connectWallet = useCallback(() => {
-    window.solana.connect().then(({ publicKey }: { publicKey: Symbol }) => {
-      setWalletConnected(true);
-      fetch(`/api/tokens?address=${publicKey.toString()}&creator=${CREATOR}`)
-        .then((res) => res.json())
-        .then((tokens) => {
-          console.log(tokens);
-          onTokens(tokens);
-        });
-    });
-  }, [onTokens]);
-
-  // Attempt auto connection to trusted wallet
-  useEffect(() => {
-    setHasWallet(window.solana !== undefined);
-    if (window.solana !== undefined) {
-      window.solana.connect({ onlyIfTrusted: true }).then(({ publicKey }: { publicKey: Symbol }) => {
+    const connectWallet = useCallback(() => {
+      window.solana.connect().then(({ publicKey }: { publicKey: Symbol }) => {
         setWalletConnected(true);
         fetch(`/api/tokens?address=${publicKey.toString()}&creator=${CREATOR}`)
           .then((res) => res.json())
           .then((tokens) => {
-            onTokens(tokens);
+            console.log(tokens);
+            onTokens(publicKey.toString(), tokens);
           });
       });
-    }
-  }, [onTokens]);
+    }, [onTokens]);
 
-  return (
-    <>
-      {hasWallet && !walletConnected && (
-        <Text size="3">
-          <a href="#connect" onClick={connectWallet} style={{ color: '#0070f3' }}>
-            Connect your phantom wallet
-          </a>{' '}
-          to bind your wallet address.
-        </Text>
-      )}
-      {!hasWallet && (
-        <Container size="4" css={{ padding: '$1' }}>
-          <TextField
-            type="text"
-            size="2"
-            placeholder="Wallet Address"
-            autoComplete="off"
-            css={{ mb: '$3' }}
-            onKeyDown={handleSubmit}
-          />
-        </Container>
-      )}
-    </>
-  );
-});
+    // Attempt auto connection to trusted wallet
+    useEffect(() => {
+      setHasWallet(window.solana !== undefined);
+      if (window.solana !== undefined) {
+        window.solana.connect({ onlyIfTrusted: true }).then(({ publicKey }: { publicKey: Symbol }) => {
+          setWalletConnected(true);
+          fetch(`/api/tokens?address=${publicKey.toString()}&creator=${CREATOR}`)
+            .then((res) => res.json())
+            .then((tokens) => {
+              onTokens(publicKey.toString(), tokens);
+            });
+        });
+      }
+    }, [onTokens]);
 
-const SelectNFT: React.FC<{ tokens: Array<Token>; onSelect: (token: Token) => void }> = memo(function SelectNFT({
-  tokens,
-  onSelect,
-}) {
+    return (
+      <>
+        {hasWallet && !walletConnected && (
+          <Card variant="interactive" css={{ margin: '$4', padding: '$3' }}>
+            <Text size="3">
+              <a href="#connect" onClick={connectWallet} style={{ color: '#0070f3' }}>
+                Connect your phantom wallet
+              </a>{' '}
+              to bind your wallet address.
+            </Text>
+          </Card>
+        )}
+        {!hasWallet && (
+          <Card variant="interactive" css={{ margin: '$4', padding: '$3' }}>
+            <Text size="3">
+              <a href="https://phantom.app" style={{ color: '#0070f3' }}>
+                Phantom Wallet
+              </a>{' '}
+              is required to use this app.
+            </Text>
+          </Card>
+        )}
+      </>
+    );
+  }
+);
+
+const SelectNFT: React.FC<{
+  address: string;
+  tokens: Array<Token>;
+  onSelect: (address: string, token: Token) => void;
+}> = memo(function SelectNFT({ address, tokens, onSelect }) {
   return (
     <Flex justify="center" align="center" wrap="wrap" css={{ maxWidth: '1200px' }}>
       {tokens.map((token) => (
@@ -120,7 +109,7 @@ const SelectNFT: React.FC<{ tokens: Array<Token>; onSelect: (token: Token) => vo
           variant="interactive"
           css={{ margin: '$4', padding: '$3' }}
           key={token.address}
-          onClick={() => onSelect(token)}
+          onClick={() => onSelect(address, token)}
         >
           <Text as="h3" size="2" css={{ mb: '$1' }}>
             {token.metadata.name}
@@ -165,6 +154,7 @@ const GameLoop: React.FC<{ token: Token | null }> = memo(function GameLoop({ tok
 
 const Home: NextPage = () => {
   const [step, setStep] = useState<'' | 'select-nft' | 'game-loop'>('');
+  const [address, setAddress] = useState('');
   const [tokens, setTokens] = useState<Array<Token>>([]);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
 
@@ -180,8 +170,36 @@ const Home: NextPage = () => {
     }
   }, [selectedToken]);
 
-  const handleTokens = useCallback((tokens) => setTokens(tokens), []);
-  const handleSelectToken = useCallback((token) => setSelectedToken(token), []);
+  const handleTokens = useCallback((address, tokens) => {
+    setAddress(address);
+    setTokens(tokens);
+  }, []);
+
+  const handleSelectToken = useCallback((address, token) => {
+    fetch(`/api/challenge?address=${address}`)
+      .then((res) => res.json())
+      .then(({ signature: challenge }) => {
+        window.solana
+          .request({
+            method: 'signMessage',
+            params: {
+              message: new TextEncoder().encode(challenge),
+              display: 'utf8',
+            },
+          })
+          .then((signature: { publicKey: string; signature: string }) => {
+            fetch(`/api/challenge`, {
+              method: 'POST',
+              body: JSON.stringify({ challenge, signature }, undefined, 0),
+            })
+              .then((res) => res.json())
+              .then(({ id }) => {
+                console.log('Player Id:', id);
+                setSelectedToken(token);
+              });
+          });
+      });
+  }, []);
 
   return (
     <Box css={{ backgroundColor: '$loContrast' }}>
@@ -189,6 +207,7 @@ const Home: NextPage = () => {
         <title>Sol Souls Afterlife</title>
         <meta name="description" content="Generated by create next app" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </Head>
       <ThemeToggleButton />
       <Flex direction="column" justify="center" align="center" css={{ minHeight: '100vh', padding: '4rem 0' }}>
@@ -219,7 +238,7 @@ const Home: NextPage = () => {
                 <ConnectWallet onTokens={handleTokens} />
               </Case>
               <Case where="select-nft">
-                <SelectNFT tokens={tokens} onSelect={handleSelectToken} />
+                <SelectNFT address={address} tokens={tokens} onSelect={handleSelectToken} />
               </Case>
               <Case where="game-loop">
                 <DefoldAppContextProvider namespace="DefoldApp" data={{}}>

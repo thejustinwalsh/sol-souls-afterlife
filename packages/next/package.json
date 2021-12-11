@@ -13,13 +13,18 @@
     "@radix-ui/react-id": "^0.1.1",
     "@solana/web3.js": "^1.31.0",
     "@stitches/react": "^1.2.6",
+    "base64url": "^3.0.1",
+    "bs58": "^4.0.1",
     "next": "12.0.4",
     "next-themes": "^0.0.15",
     "react": "17.0.2",
     "react-defold": "^0.1.11",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
+    "@types/bs58": "^4.0.1",
     "@types/node": "16.11.10",
     "@types/react": "17.0.37",
     "eslint": "7.32.0",
