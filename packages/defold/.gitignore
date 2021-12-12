@@ -37,4 +37,4 @@ app/build
 app/builtins
 dmengine*
 bundle/
-package.tgz
+defold-*.tgz

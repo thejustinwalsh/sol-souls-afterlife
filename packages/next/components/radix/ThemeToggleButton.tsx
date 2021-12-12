@@ -1,5 +1,6 @@
 import { useTheme } from 'next-themes';
 import React, { useCallback, useEffect, useState } from 'react';
+import { Box } from './Box';
 import { Button } from './Button';
 
 export function ThemeToggleButton() {
@@ -9,17 +10,14 @@ export function ThemeToggleButton() {
   useEffect(() => setMounted(true), []);
 
   const toggleTheme = useCallback(() => {
-    const targetTheme = resolvedTheme === "light" ? "dark" : "light";
+    const targetTheme = resolvedTheme === 'light' ? 'dark' : 'light';
     setTheme(targetTheme);
   }, [resolvedTheme, setTheme]);
 
   if (!mounted) return null;
   return (
-    <Button
-      style={{ position: 'fixed', zIndex: 999, right: 15, top: 15 }}
-      onClick={toggleTheme}
-    >
-      Toggle theme
+    <Button style={{ minHeight: '50px' }} onClick={toggleTheme}>
+      <Box css={{ fontSize: '$7' }}>{resolvedTheme === 'dark' ? '🌞' : '🌚'}</Box>
     </Button>
   );
 }

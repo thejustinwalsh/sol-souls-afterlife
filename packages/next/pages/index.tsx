@@ -1,20 +1,24 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { DefoldApp, DefoldAppContextProvider, useDefoldAppContext } from 'react-defold';
 
 import { Switch, Case } from '../components/Switch';
-import { Box } from '../components/Box';
-import { ThemeToggleButton } from '../components/ThemeToggleButton';
-import { Heading } from '../components/Heading';
-import { Text } from '../components/Text';
-import { Flex } from '../components/Flex';
-import { Image } from '../components/Image';
-import { Container } from '../components/Container';
-import { Card } from '../components/Card';
-import { Link } from '../components/Link';
-import { TextField } from '../components/TextField';
-import { sign } from 'crypto';
+import { Box } from '../components/radix/Box';
+import { ThemeToggleButton } from '../components/radix/ThemeToggleButton';
+import { Heading } from '../components/radix/Heading';
+import { Text } from '../components/radix/Text';
+import { Flex } from '../components/radix/Flex';
+import { Image } from '../components/radix/Image';
+import { Card } from '../components/radix/Card';
+import { Link } from '../components/radix/Link';
+
+import { WalletConnectButton, WalletDisconnectButton, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { SymbolIcon } from '@radix-ui/react-icons';
+import { keyframes } from '@stitches/react';
+
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 declare global {
   interface Window {
@@ -36,59 +40,45 @@ interface Token {
   };
 }
 
-const ConnectWallet: React.FC<{ onTokens: (address: string, tokens: Array<Token>) => void }> = memo(
-  function ConnectWallet({ onTokens }) {
-    const CREATOR = '9doSyLpnDtAB4R1CVmKjwqUWP6oJ8huB1SSJksthYPS'; // Sol Souls
+const FetchNFTs: React.FC<{ connected: boolean; onTokens: (address: string, tokens: Array<Token>) => void }> = memo(
+  function ConnectWallet({ connected, onTokens }) {
+    const creatorAddress = '9doSyLpnDtAB4R1CVmKjwqUWP6oJ8huB1SSJksthYPS'; // Sol Souls
 
-    const [walletConnected, setWalletConnected] = useState(false);
-    const [hasWallet, setHasWallet] = useState(false);
+    const rotate = keyframes({
+      '0%': { transform: 'rotate(0deg)' },
+      '100%': { transform: 'rotate(360deg)' },
+    });
 
-    const connectWallet = useCallback(() => {
-      window.solana.connect().then(({ publicKey }: { publicKey: Symbol }) => {
-        setWalletConnected(true);
-        fetch(`/api/tokens?address=${publicKey.toString()}&creator=${CREATOR}`)
-          .then((res) => res.json())
-          .then((tokens) => {
-            console.log(tokens);
-            onTokens(publicKey.toString(), tokens);
-          });
-      });
-    }, [onTokens]);
+    const [loading, setLoading] = useState(false);
+    const { publicKey } = useWallet();
+
+    const connectWallet = useCallback(() => {}, [publicKey]);
 
     // Attempt auto connection to trusted wallet
     useEffect(() => {
-      setHasWallet(window.solana !== undefined);
-      if (window.solana !== undefined) {
-        window.solana.connect({ onlyIfTrusted: true }).then(({ publicKey }: { publicKey: Symbol }) => {
-          setWalletConnected(true);
-          fetch(`/api/tokens?address=${publicKey.toString()}&creator=${CREATOR}`)
-            .then((res) => res.json())
-            .then((tokens) => {
-              onTokens(publicKey.toString(), tokens);
-            });
-        });
+      console.log(connected, publicKey?.toString());
+      if (publicKey) {
+        if (!loading) setLoading(true);
+        fetch(`/api/tokens?address=${publicKey.toString()}&creator=${creatorAddress}`)
+          .then((res) => res.json())
+          .then((tokens) => {
+            setLoading(false);
+            onTokens(publicKey.toString(), tokens);
+          });
       }
-    }, [onTokens]);
+    }, [onTokens, publicKey, connected]);
 
     return (
       <>
-        {hasWallet && !walletConnected && (
+        {publicKey ? (
+          <SymbolIcon style={{ width: '50px', height: '50px', animation: `${rotate} 3s linear infinite` }} />
+        ) : (
           <Card variant="interactive" css={{ margin: '$4', padding: '$3' }}>
             <Text size="3">
               <a href="#connect" onClick={connectWallet} style={{ color: '#0070f3' }}>
                 Connect your phantom wallet
               </a>{' '}
               to bind your wallet address.
-            </Text>
-          </Card>
-        )}
-        {!hasWallet && (
-          <Card variant="interactive" css={{ margin: '$4', padding: '$3' }}>
-            <Text size="3">
-              <a href="https://phantom.app" style={{ color: '#0070f3' }}>
-                Phantom Wallet
-              </a>{' '}
-              is required to use this app.
             </Text>
           </Card>
         )}
@@ -157,6 +147,11 @@ const Home: NextPage = () => {
   const [address, setAddress] = useState('');
   const [tokens, setTokens] = useState<Array<Token>>([]);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
+  const { connected, connecting } = useWallet();
+
+  useEffect(() => {
+    if (!connected) setStep('');
+  }, [connected]);
 
   useEffect(() => {
     if (tokens.length > 0) {
@@ -205,11 +200,17 @@ const Home: NextPage = () => {
     <Box css={{ backgroundColor: '$loContrast' }}>
       <Head>
         <title>Sol Souls Afterlife</title>
-        <meta name="description" content="Generated by create next app" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="description" content="GM/GN Sol Souls Lounge" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/site.webmanifest" />
       </Head>
-      <ThemeToggleButton />
+      <Flex direction="row" justify="end" gap="2" css={{ position: 'sticky', zIndex: 999, top: '$2' }}>
+        <WalletMultiButton />
+        <ThemeToggleButton />
+        <span />
+      </Flex>
       <Flex direction="column" justify="center" align="center" css={{ minHeight: '100vh', padding: '4rem 0' }}>
         <Box css={{ margin: '$4' }}>
           <Heading as="h1" size="4">
@@ -235,7 +236,7 @@ const Home: NextPage = () => {
           <Flex direction="column" justify="center" align="center" css={{ position: 'absolute', zIndex: 1 }}>
             <Switch on={step}>
               <Case where="">
-                <ConnectWallet onTokens={handleTokens} />
+                <FetchNFTs connected={connected} onTokens={handleTokens} />
               </Case>
               <Case where="select-nft">
                 <SelectNFT address={address} tokens={tokens} onSelect={handleSelectToken} />
