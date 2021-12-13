@@ -5,7 +5,7 @@ import { DefoldApp, DefoldAppContextProvider, useDefoldAppContext } from 'react-
 
 import { Switch, Case } from '../components/Switch';
 import { Box } from '../components/radix/Box';
-import { ThemeToggleButton } from '../components/radix/ThemeToggleButton';
+import { ThemeToggleButton } from '../components/ThemeToggleButton';
 import { Heading } from '../components/radix/Heading';
 import { Text } from '../components/radix/Text';
 import { Flex } from '../components/radix/Flex';
@@ -17,6 +17,7 @@ import { WalletConnectButton, WalletDisconnectButton, WalletMultiButton } from '
 import { useWallet } from '@solana/wallet-adapter-react';
 import { SymbolIcon } from '@radix-ui/react-icons';
 import { keyframes } from '@stitches/react';
+import { callbackify } from 'util';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 
@@ -71,7 +72,9 @@ const FetchNFTs: React.FC<{ connected: boolean; onTokens: (address: string, toke
     return (
       <>
         {publicKey ? (
-          <SymbolIcon style={{ width: '50px', height: '50px', animation: `${rotate} 3s linear infinite` }} />
+          <Card variant="interactive" css={{ margin: '$4', padding: '$3' }}>
+            <SymbolIcon style={{ width: '50px', height: '50px', animation: `${rotate} 3s linear infinite` }} />
+          </Card>
         ) : (
           <Card variant="interactive" css={{ margin: '$4', padding: '$3' }}>
             <Text size="3">
@@ -97,14 +100,20 @@ const SelectNFT: React.FC<{
       {tokens.map((token) => (
         <Card
           variant="interactive"
-          css={{ margin: '$4', padding: '$3' }}
+          css={{ margin: '$1', padding: '$3' }}
           key={token.address}
           onClick={() => onSelect(address, token)}
         >
-          <Text as="h3" size="2" css={{ mb: '$1' }}>
+          <Text as="h3" size="3" css={{ mb: '$1' }}>
             {token.metadata.name}
           </Text>
-          <Image src={token.metadata.image} alt={token.metadata.name} width={200} height={200} />
+          <Image
+            css={{ borderRadius: '$3' }}
+            src={token.metadata.image}
+            alt={token.metadata.name}
+            width={200}
+            height={200}
+          />
         </Card>
       ))}
     </Flex>
@@ -147,7 +156,7 @@ const Home: NextPage = () => {
   const [address, setAddress] = useState('');
   const [tokens, setTokens] = useState<Array<Token>>([]);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
-  const { connected, connecting } = useWallet();
+  const { connected } = useWallet();
 
   useEffect(() => {
     if (!connected) setStep('');
@@ -222,9 +231,9 @@ const Home: NextPage = () => {
           direction="column"
           justify="center"
           align="center"
-          css={{ position: 'relative', pt: '$3', boxSizing: 'content-box', minWidth: 800, minHeight: 640 }}
+          css={{ position: 'relative', pt: '$3', boxSizing: 'content-box', minWidth: '800px', minHeight: '640px' }}
         >
-          <Flex css={{ position: 'absolute', zIndex: 0 }}>
+          <Flex css={{ borderRadius: '$3', overflow: 'hidden', position: 'absolute', zIndex: 0 }}>
             <DefoldApp
               root="./package/bundle/js-web/sol-souls-afterlife"
               app="solsoulsafterlife"

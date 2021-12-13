@@ -23,7 +23,7 @@
     "next": "12.0.4",
     "next-themes": "^0.0.15",
     "react": "17.0.2",
-    "react-defold": "^0.1.11",
+    "react-defold": "^0.1.12",
     "react-dom": "17.0.2",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1"

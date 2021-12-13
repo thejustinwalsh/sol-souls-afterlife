@@ -1,7 +1,8 @@
 import { useTheme } from 'next-themes';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box } from './Box';
-import { Button } from './Button';
+import { Box } from './radix/Box';
+import { Button } from './radix/Button';
+import { SunIcon, MoonIcon } from '@radix-ui/react-icons';
 
 export function ThemeToggleButton() {
   const [mounted, setMounted] = useState(false);
@@ -16,8 +17,14 @@ export function ThemeToggleButton() {
 
   if (!mounted) return null;
   return (
-    <Button style={{ minHeight: '50px' }} onClick={toggleTheme}>
-      <Box css={{ fontSize: '$7' }}>{resolvedTheme === 'dark' ? '🌞' : '🌚'}</Box>
+    <Button style={{ minHeight: '50px', minWidth: '50px' }} onClick={toggleTheme}>
+      <Box css={{ fontSize: '$7' }}>
+        {resolvedTheme === 'dark' ? (
+          <MoonIcon style={{ width: '20px', height: '20px' }} />
+        ) : (
+          <SunIcon style={{ width: '20px', height: '20px' }} />
+        )}
+      </Box>
     </Button>
   );
 }
