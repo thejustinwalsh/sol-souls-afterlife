@@ -220,7 +220,7 @@ const Home: NextPage = () => {
         <ThemeToggleButton />
         <span />
       </Flex>
-      <Flex direction="column" justify="center" align="center" css={{ minHeight: '100vh', padding: '4rem 0' }}>
+      <Flex direction="column" justify="center" align="center">
         <Box css={{ margin: '$4' }}>
           <Heading as="h1" size="4">
             Sol Souls Afterlife
