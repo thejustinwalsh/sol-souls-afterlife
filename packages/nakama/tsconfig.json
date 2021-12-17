@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TypeScriptToLua/vscode-typescript-to-lua/master/tsconfig-schema.json",
+  "compilerOptions": {
+    "target": "es2019",
+    "lib": ["es2019"],
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "types": ["typescript-to-lua/language-extensions"],
+    "typeRoots": ["@types", "node_modules/@types"],
+    "rootDir": "src",
+    "outDir": "data",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "sourceMap": false
+  },
+  "exclude": ["./node_modules/*"],
+  "tstl": {
+    "luaTarget": "5.1",
+    "luaLibImport": "inline",
+    "sourceMapTraceback": false
+  }
+}

@@ -1,0 +1,23 @@
+name: nakama-dev
+socket:
+  # Replace this with a random string.
+  server_key: "wg!@5kpvUY3vjuM&UbMNQB^H3j5XXeZ5"
+
+session:
+  # 6h token expiry
+  token_expiry_sec: 21600
+  # Replace both of these with a random strings.
+  encryption_key: "4HhxX5gYnTX*A*Ug4uzs72AH7@fuM$Cp"
+  refresh_encryption_key: "a$Sv8msmFAice9wmZX5c4h%UoHwEd*Q$"
+
+runtime:
+  # Replace this with a random string.
+  http_key: "oxFFfs#n3W6Ht&brB33FxoZUJ%!*gogN"
+
+console:
+  # Replace these with a secure username and password.
+  username: "nakama-dev"
+  password: "hr95rq!PRUksG2QNHe"
+ 
+  # Replace this with a random string.
+  signing_key: "k!Y$W2j$XM^rt5Lk#DMsq&E*tmRzE2Gp"
