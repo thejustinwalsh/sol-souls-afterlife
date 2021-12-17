@@ -4,6 +4,7 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "patch-package",
     "setup:defold": "npm pack --workspace=defold --pack-destination=./packages/defold",
     "setup:next": "decompress ./packages/defold/defold-0.1.0.tgz --out-dir=./packages/next/public",
     "setup": "npm run setup:defold && npm run setup:next"
@@ -14,6 +15,10 @@
   "devDependencies": {
     "decompress-cli": "^2.0.0",
     "eslint": "^7.10.0",
-    "typescript": "4.4.4"
+    "typescript": "4.4.4",
+    "typescript-to-lua": "1.1.1"
+  },
+  "dependencies": {
+    "react": "17.0.2"
   }
 }
