@@ -7,19 +7,20 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 // https://tweetnacl.js.org/#/sign
 const SECRET_KEY =
   process.env.SECRET_KEY || 'L2i93OqUCAsPhC2/Wd4NYA3kW0HTdhPIKQ1aAP6s2ngi2mjCoVYhBYXidcuANs7kvxDKgngBETKR6a55TaZLSw==';
+// https://tweetnacl.js.org/#/secretbox (nonce)
+const SALT = process.env.SALT || 'EVEzKkHr3y3ImyiVAD9RK3uQ6hKT2BUT';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   // Abort if we have not setup our keys in the env
-  if (process.env.NODE_ENV === 'production' && SECRET_KEY != process.env.SECRET_KEY) {
-    console.error('SECRET_KEY is not set correctly');
+  if (process.env.NODE_ENV === 'production' && (SECRET_KEY != process.env.SECRET_KEY || SALT != process.env.SALT)) {
+    console.error('SECRET_KEY and/or SALT not set correctly, update your .env');
     return res.status(500).end();
   }
 
   // Generate a new JWT challenge
   if (req.method === 'GET') {
-    const { address } = req.query;
-    const salt = util.encodeBase64(nacl.randomBytes(8));
-    const id = util.encodeBase64(nacl.hash(util.decodeUTF8(`${address}:${salt}`)));
+    const { address, token } = req.query;
+    const id = util.encodeBase64(nacl.hash(util.decodeUTF8(`${address}:${SALT}:${token}`)));
 
     const header = { alg: 'Ed25519', typ: 'JWT' };
     const payload = {
