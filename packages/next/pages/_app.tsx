@@ -4,7 +4,7 @@ import { ThemeProvider } from 'next-themes';
 import { DesignSystemProvider } from '../components/radix/DesignSystemProvider';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { getPhantomWallet } from '../utils/getPhantomWallet';
+import { getPhantomWallet } from '../util/getPhantomWallet';
 
 import { darkTheme } from '../stitches.config';
 import { useMemo } from 'react';

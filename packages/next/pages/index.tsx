@@ -120,7 +120,7 @@ const SelectNFT: React.FC<{
   );
 });
 
-const GameLoop: React.FC<{ token: Token | null }> = memo(function GameLoop({ token }) {
+const GameLoop: React.FC<{ user?: string; token?: Token }> = memo(function GameLoop({ user, token }) {
   const onReceive = useCallback((command: string, payload: Record<string, unknown>) => {
     console.log(command, payload);
   }, []);
@@ -128,14 +128,14 @@ const GameLoop: React.FC<{ token: Token | null }> = memo(function GameLoop({ tok
   const { send, data } = useDefoldAppContext({ onReceive });
 
   useEffect(() => {
-    if (token !== null) {
+    if (token) {
       const payload: Record<string, unknown> = {};
       token.metadata.attributes.forEach(({ trait_type, value }) => {
         const key = trait_type.split('/')[0].toLowerCase();
         payload[key] = trait_type.split('/')[0].toLowerCase() + '_' + value.replaceAll(' ', '_').toLowerCase();
       });
       console.log(payload);
-      send('spawn', { local: true, token: token.address, traits: payload });
+      send('spawn', { id: user, name: token.metadata.name, token: token.address, traits: payload });
     }
   }, [send, token]);
 
@@ -155,7 +155,8 @@ const Home: NextPage = () => {
   const [step, setStep] = useState<'' | 'select-nft' | 'game-loop'>('');
   const [address, setAddress] = useState('');
   const [tokens, setTokens] = useState<Array<Token>>([]);
-  const [selectedToken, setSelectedToken] = useState<Token | null>(null);
+  const [selectedToken, setSelectedToken] = useState<Token>();
+  const [userId, setUserId] = useState('');
   const { connected } = useWallet();
 
   useEffect(() => {
@@ -179,8 +180,8 @@ const Home: NextPage = () => {
     setTokens(tokens);
   }, []);
 
-  const handleSelectToken = useCallback((address, token) => {
-    fetch(`/api/challenge?address=${address}`)
+  const handleSelectToken = useCallback((address: string, token: Token) => {
+    fetch(`/api/challenge?address=${address}&token=${token.address}`)
       .then((res) => res.json())
       .then(({ signature: challenge }) => {
         window.solana
@@ -198,7 +199,7 @@ const Home: NextPage = () => {
             })
               .then((res) => res.json())
               .then(({ id }) => {
-                console.log('Player Id:', id);
+                setUserId(id);
                 setSelectedToken(token);
               });
           });
@@ -252,7 +253,7 @@ const Home: NextPage = () => {
               </Case>
               <Case where="game-loop">
                 <DefoldAppContextProvider namespace="DefoldApp" data={{}}>
-                  <GameLoop token={selectedToken} />
+                  <GameLoop user={userId} token={selectedToken} />
                 </DefoldAppContextProvider>
               </Case>
             </Switch>
