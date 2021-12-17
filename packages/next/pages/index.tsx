@@ -228,37 +228,38 @@ const Home: NextPage = () => {
           </Heading>
         </Box>
 
-        <Flex
-          direction="column"
-          justify="center"
-          align="center"
-          css={{ position: 'relative', pt: '$3', boxSizing: 'content-box', minWidth: '800px', minHeight: '640px' }}
-        >
-          <Flex css={{ borderRadius: '$3', overflow: 'hidden', position: 'absolute', zIndex: 0 }}>
-            <DefoldApp
-              root="./package/bundle/js-web/sol-souls-afterlife"
-              app="solsoulsafterlife"
-              width={800}
-              height={640}
-            />
-          </Flex>
+        
+          <Flex
+            direction="column"
+            justify="center"
+            align="center"
+            css={{ position: 'relative', pt: '$3', boxSizing: 'content-box', minWidth: '800px', minHeight: '640px' }}
+          >
+            <DefoldAppContextProvider namespace="DefoldApp" data={{}}>
+            <Flex css={{ borderRadius: '$3', overflow: 'hidden', position: 'absolute', zIndex: 0 }}>
+              <DefoldApp
+                root="./package/bundle/js-web/sol-souls-afterlife"
+                app="solsoulsafterlife"
+                width={800}
+                height={640}
+              />
+            </Flex>
 
-          <Flex direction="column" justify="center" align="center" css={{ position: 'absolute', zIndex: 1 }}>
-            <Switch on={step}>
-              <Case where="">
-                <FetchNFTs connected={connected} onTokens={handleTokens} />
-              </Case>
-              <Case where="select-nft">
-                <SelectNFT address={address} tokens={tokens} onSelect={handleSelectToken} />
-              </Case>
-              <Case where="game-loop">
-                <DefoldAppContextProvider namespace="DefoldApp" data={{}}>
+            <Flex direction="column" justify="center" align="center" css={{ position: 'absolute', zIndex: 1 }}>
+              <Switch on={step}>
+                <Case where="">
+                  <FetchNFTs connected={connected} onTokens={handleTokens} />
+                </Case>
+                <Case where="select-nft">
+                  <SelectNFT address={address} tokens={tokens} onSelect={handleSelectToken} />
+                </Case>
+                <Case where="game-loop">
                   <GameLoop user={userId} token={selectedToken} />
-                </DefoldAppContextProvider>
-              </Case>
-            </Switch>
+                </Case>
+              </Switch>
+            </Flex>
+            </DefoldAppContextProvider>
           </Flex>
-        </Flex>
       </Flex>
 
       <Flex justify="center" align="center" css={{ padding: '$4' }}>
