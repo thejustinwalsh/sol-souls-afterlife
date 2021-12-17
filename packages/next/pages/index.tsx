@@ -135,7 +135,7 @@ const GameLoop: React.FC<{ user?: string; token?: Token }> = memo(function GameL
         payload[key] = trait_type.split('/')[0].toLowerCase() + '_' + value.replaceAll(' ', '_').toLowerCase();
       });
       console.log(payload);
-      send('spawn', { id: user, name: token.metadata.name, token: token.address, traits: payload });
+      send('connect', { id: user, name: token.metadata.name, token: token.address, traits: payload });
     }
   }, [send, token]);
 
@@ -228,14 +228,13 @@ const Home: NextPage = () => {
           </Heading>
         </Box>
 
-        
-          <Flex
-            direction="column"
-            justify="center"
-            align="center"
-            css={{ position: 'relative', pt: '$3', boxSizing: 'content-box', minWidth: '800px', minHeight: '640px' }}
-          >
-            <DefoldAppContextProvider namespace="DefoldApp" data={{}}>
+        <Flex
+          direction="column"
+          justify="center"
+          align="center"
+          css={{ position: 'relative', pt: '$3', boxSizing: 'content-box', minWidth: '800px', minHeight: '640px' }}
+        >
+          <DefoldAppContextProvider namespace="DefoldApp" data={{}}>
             <Flex css={{ borderRadius: '$3', overflow: 'hidden', position: 'absolute', zIndex: 0 }}>
               <DefoldApp
                 root="./package/bundle/js-web/sol-souls-afterlife"
@@ -258,8 +257,8 @@ const Home: NextPage = () => {
                 </Case>
               </Switch>
             </Flex>
-            </DefoldAppContextProvider>
-          </Flex>
+          </DefoldAppContextProvider>
+        </Flex>
       </Flex>
 
       <Flex justify="center" align="center" css={{ padding: '$4' }}>
